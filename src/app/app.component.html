@@ -183,9 +183,9 @@
   </div>
 
   <!-- For Assigned Condition -->
-  <div class="mark-experiment">
+  <div class="assigned-condition">
     <p class="heading">Assigned Condition</p>
-    <div class="mark-experiment-view">
+    <div class="assigned-condition-view">
       <table
         *ngIf="assignedConditions.length; else noExperimentForMark"
         mat-table
@@ -233,7 +233,7 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumnMarkExperiment;"></tr>
       </table>
       <ng-template #noExperimentForMark>
-        <div class="mark-experiment-zero-state">
+        <div class="assigned-condition-zero-state">
           <span>Zero Conditions assigned</span>
         </div>
       </ng-template>
@@ -241,13 +241,50 @@
   </div>
 
   <!-- For Mark Experiment -->
-  <!-- <button
-    mat-raised-button
-    class="default-button form-control mark-experiment-btn"
-    [ngClass]="{'default-button--disabled': !selectedConditions.length}"
-    (click)="markSelectedExperimentPartition()"
-  >
-    Mark Selected Conditions
-  </button> -->
+  <p class="heading">Mark Experiment</p>
+    <div class="mark-experiment-view">
 
-</div>
+      <form [formGroup]="markExperimentForm">
+        <mat-form-field class="form-control">
+          <input
+            matInput
+            placeholder="Partition Name"
+            aria-label="Partition Name"
+            [matAutocomplete]="markExperimentName"
+            formControlName="markExperimentName"
+          >
+          <mat-autocomplete #markExperimentName="matAutocomplete">
+            <mat-option *ngFor="let partition of filterMarkExperimentNames$ | async" [value]="partition.partitionName">
+              <span>{{ partition.partitionName }}</span>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field class="form-control">
+          <input
+            matInput
+            placeholder="Partition Point"
+            aria-label="Partition Point"
+            [matAutocomplete]="markExperimentPoint"
+            formControlName="markExperimentPoint"
+          >
+          <mat-autocomplete #markExperimentPoint="matAutocomplete">
+            <mat-option *ngFor="let partition of filterMarkExperimentPoints$ | async" [value]="partition.partitionPoint">
+              <span>{{ partition.partitionPoint }}</span>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </form>
+
+      <button
+        mat-raised-button
+        class="default-button form-control mark-experiment-btn"
+        [ngClass]="{'default-button--disabled': !markExperimentForm.valid || !selectedUser?.id}"
+        [disabled]="!markExperimentForm.valid || !selectedUser?.id"
+        (click)="markExperiment()"
+      >
+        Mark Experiment
+      </button>
+    </div>
+
+  </div>

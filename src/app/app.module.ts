@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { MatTableModule } from '@angular/material/table';
     MatCheckboxModule,
     MatIconModule,
     MatTooltipModule,
-    MatTableModule
+    MatTableModule,
+    MatAutocompleteModule
   ],
   providers: [],
   bootstrap: [AppComponent]

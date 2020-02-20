@@ -35,7 +35,7 @@
 
   .user-initiate,
   .experiment-partition,
-  .mark-experiment {
+  .assigned-condition {
     margin-bottom: 50px;
 
     .add-user-group,
@@ -87,7 +87,7 @@
     }
   }
 
-  .mark-experiment {
+  .assigned-condition {
     &-view {
       .assigned-condition-table {
         width: 100%;
@@ -98,7 +98,7 @@
         }
       }
 
-      .mark-experiment-zero-state {
+      .assigned-condition-zero-state {
         display: flex;
         align-items: center;
         justify-content: center;

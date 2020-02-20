@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators, FormGroup, FormArray } from '@angular/forms';
 import { FormValidators } from './validators/form-validators';
-import { startWith } from 'rxjs/operators';
+import { startWith, map } from 'rxjs/operators';
 import { GroupTypes } from './core/app.model';
-import { init, interestedExperimentPoint, getExperimentCondition } from 'ees-client-lib';
+import { init, interestedExperimentPoint, getExperimentCondition, markExperimentPoint } from 'ees-client-lib';
 import { environment } from 'src/environments/environment';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -34,6 +35,11 @@ export class AppComponent implements OnInit {
   // For Assigned Conditions
   displayedColumnMarkExperiment = ['no', 'point', 'name', 'conditionCode', 'assignmentWeight', 'description'];
 
+  // For Mark Experiment
+  markExperimentForm: FormGroup;
+  filterMarkExperimentPoints$: Observable<any[]>;
+  filterMarkExperimentNames$: Observable<any[]>;
+
   constructor(
     private _formBuilder: FormBuilder,
   ) {}
@@ -60,6 +66,23 @@ export class AppComponent implements OnInit {
       partitions: this._formBuilder.array([this.getNewPartitionInfo()])
     });
 
+    // For Mark Experiment
+    this.markExperimentForm = this._formBuilder.group({
+      markExperimentPoint: [null, Validators.required],
+      markExperimentName: [null, Validators.required]
+    });
+
+    this.filterMarkExperimentNames$ = this.markExperimentForm.get('markExperimentName').valueChanges
+      .pipe(
+        startWith(''),
+        map(state => state ? this._filterMarkExperimentPoints(state, 'partitionName') : this.listOfExperimentPoints.slice())
+      );
+
+    this.filterMarkExperimentPoints$ = this.markExperimentForm.get('markExperimentPoint').valueChanges
+      .pipe(
+        startWith(''),
+        map(state => state ? this._filterMarkExperimentPoints(state, 'partitionPoint') : this.listOfExperimentPoints.slice() )
+      );
   }
 
   async fetchExperimentConditions() {
@@ -159,6 +182,16 @@ export class AppComponent implements OnInit {
 
 
   // For Mark Experiment
-  markSelectedExperimentPartition() {
+
+  private _filterMarkExperimentPoints(value: string, type: string): any[] {
+    const filterValue = value.toLowerCase();
+    return this.listOfExperimentPoints.filter(state => state[type].toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  async markExperiment() {
+    const { markExperimentPoint: point, markExperimentName } = this.markExperimentForm.value;
+    this.markExperimentForm.reset();
+    const response = await markExperimentPoint(markExperimentName, point);
+    console.log('Response of mark Experiment ', response);
   }
 }
