@@ -2,8 +2,10 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+const endpointApi = 'http://upgrade-development.us-east-1.elasticbeanstalk.com';
 export const environment = {
-  production: false
+  production: false,
+  endpointApi
 };
 
 /*

@@ -1,0 +1,118 @@
+.container {
+  margin: 30px;
+  background-color: var(--white);
+  border-radius: 15px;
+  padding: 20px;
+
+  .heading {
+    font-size: var(--text-size-xx-large);
+    font-weight: bold;
+  }
+
+  .default-button {
+    background-color: var(--blue) !important;
+    padding: 0 1rem;
+    color: var(--white) !important;
+
+    &--disabled {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+  }
+
+  .icons {
+    position: relative;
+    top: 5px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .form-control {
+    margin-right: 20px;
+  }
+
+  .user-initiate,
+  .experiment-partition,
+  .mark-experiment {
+    margin-bottom: 50px;
+
+    .add-user-group,
+    .add-partition {
+      display: block;
+      margin-bottom: 10px;
+      background-color: transparent;
+      border: 0;
+      padding: 0;
+      color: var(--blue);
+      outline: 0;
+      font-size: var(--text-size-x-small);
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .remove-icon {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .group-name {
+      display: block;
+    }
+  }
+
+  .experiment-partition {
+    &-view {
+      display: flex;
+      flex-direction: row;
+
+      .experiment-point-table {
+        flex-grow: 1;
+
+        .mat-cell,
+        .mat-header-cell {
+          text-align: center;
+          width: 33%;
+          padding: 5px;
+        }
+      }
+    }
+
+    &-form {
+      margin-right: 100px;
+    }
+  }
+
+  .mark-experiment {
+    &-view {
+      .assigned-condition-table {
+        width: 100%;
+
+        .mat-cell,
+        .mat-header-cell {
+          text-align: center;
+        }
+      }
+
+      .mark-experiment-zero-state {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 50px;
+
+        span {
+          font-size: var(--text-size-xx-large);
+        }
+      }
+
+      .mark-experiment-btn {
+        margin-top: 15px;
+      }
+    }
+  }
+}
+
