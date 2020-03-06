@@ -26,6 +26,12 @@ export class AppComponent implements OnInit {
   // Used to maintain selected groups
   groupList = [];
 
+  // For Interested Experiment Point
+  interestedExperimentPointForm: FormGroup;
+  filterInterestedExperimentPoints$: Observable<any>;
+  displayedInterestedPoints = ['no', 'point', 'removePoint'];
+  listOfInterestedExperimentPoints = [];
+
   // For Experiment Partition Information
   experimentPartitionForm: FormGroup;
   listOfExperimentPoints = [];
@@ -60,6 +66,17 @@ export class AppComponent implements OnInit {
         }
       }
     });
+
+    // For Interested Experiment Point
+    this.interestedExperimentPointForm = this._formBuilder.group({
+      interestedPoint: [null, Validators.required]
+    });
+
+    this.filterInterestedExperimentPoints$ = this.interestedExperimentPointForm.get('interestedPoint').valueChanges
+      .pipe(
+        startWith(''),
+        map(state => state ? this._filterMarkExperimentPoints(state, 'partitionPoint') : this.listOfExperimentPoints.slice() )
+      );
 
     // For Experiment Partition Information
     this.experimentPartitionForm = this._formBuilder.group({
@@ -137,12 +154,28 @@ export class AppComponent implements OnInit {
       userEnvironment: group
     }
     await init(environment.endpointApi, data);
-    await interestedExperimentPoint([]);
+    const interestedPoints = await interestedExperimentPoint(['P3']);
+    console.log('interestedPoints', interestedPoints);
     this.fetchExperimentConditions();
   }
 
   groupTypeValue(index: number) {
     return this.userInitiateForm.get('userGroups').value[index].groupType === GroupTypes.OTHER;
+  }
+
+  // For Interested Experiment Point
+  async addInterestedPoint() {
+    const { interestedPoint } = this.interestedExperimentPointForm.value;
+    if (this.listOfInterestedExperimentPoints.indexOf(interestedPoint) === -1) {
+      this.listOfInterestedExperimentPoints = [ ...this.listOfInterestedExperimentPoints, interestedPoint ];
+    }
+    this.interestedExperimentPointForm.reset();
+    // await interestedExperimentPoint(['P3']);
+  }
+
+  removeInterestedPoint(index: number) {
+    this.listOfInterestedExperimentPoints.splice(index, 1);
+    this.listOfInterestedExperimentPoints = JSON.parse(JSON.stringify(this.listOfInterestedExperimentPoints));
   }
 
   // For Experiment Partition Information

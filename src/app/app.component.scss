@@ -24,6 +24,10 @@
     position: relative;
     top: 5px;
 
+    &-point {
+      top: 0;
+    }
+
     &:hover {
       cursor: pointer;
     }
@@ -35,7 +39,8 @@
 
   .user-initiate,
   .experiment-partition,
-  .assigned-condition {
+  .assigned-condition,
+  .interested-experiment-point {
     margin-bottom: 50px;
 
     .add-user-group,
@@ -62,6 +67,28 @@
 
     .group-name {
       display: block;
+    }
+  }
+
+  .interested-experiment-point {
+    &-view {
+      display: flex;
+      flex-direction: row;
+
+      .interested-point-table {
+        width: 500px;
+
+        .mat-cell,
+        .mat-header-cell {
+          text-align: center;
+          padding: 5px;
+        }
+      }
+    }
+
+    &-form {
+      min-width: 425px;
+      margin-right: 100px;
     }
   }
 
