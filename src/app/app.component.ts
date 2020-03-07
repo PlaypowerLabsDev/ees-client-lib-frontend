@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators, FormGroup, FormArray } from '@angular/forms';
-import { FormValidators } from './validators/form-validators';
-import { startWith, map } from 'rxjs/operators';
+import { FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { GroupTypes } from './core/app.model';
-import { init, interestedExperimentPoint, getExperimentCondition, markExperimentPoint } from 'ees-client-lib';
+import { FormValidators } from './validators/form-validators';
 import { environment } from 'src/environments/environment';
-import { Observable } from 'rxjs';
+import { init } from 'ees-client-lib';
+import { startWith, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +12,6 @@ import { Observable } from 'rxjs';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-
   // For initiating user
   userInitiateForm: FormGroup;
   selectedUser: any;
@@ -26,29 +24,7 @@ export class AppComponent implements OnInit {
   // Used to maintain selected groups
   groupList = [];
 
-  // For Interested Experiment Point
-  interestedExperimentPointForm: FormGroup;
-  filterInterestedExperimentPoints$: Observable<any>;
-  displayedInterestedPoints = ['no', 'point', 'removePoint'];
-  listOfInterestedExperimentPoints = [];
-
-  // For Experiment Partition Information
-  experimentPartitionForm: FormGroup;
-  listOfExperimentPoints = [];
-  displayedColumnsPoints = ['no', 'partitionName', 'partitionPoint', 'removePartition'];
-  assignedConditions = [];
-
-  // For Assigned Conditions
-  displayedColumnMarkExperiment = ['no', 'point', 'name', 'conditionCode', 'assignmentWeight', 'description'];
-
-  // For Mark Experiment
-  markExperimentForm: FormGroup;
-  filterMarkExperimentPoints$: Observable<any[]>;
-  filterMarkExperimentNames$: Observable<any[]>;
-
-  constructor(
-    private _formBuilder: FormBuilder,
-  ) {}
+  constructor(private _formBuilder: FormBuilder) {}
 
   ngOnInit() {
 
@@ -56,8 +32,8 @@ export class AppComponent implements OnInit {
     this.groupList[0] = this.groupTypes; // To set all group types to first control
     this.userInitiateForm = this._formBuilder.group({
       id: [null, Validators.required],
-      userGroups: this._formBuilder.array([this.getNewUserGroup()])
-    }, { validators: FormValidators.validatePreviewUserForm });
+      userGroups: this._formBuilder.array([this.getNewUserGroup()]),
+    });
 
     this.userInitiateForm.get('userGroups').valueChanges.pipe(startWith(null)).subscribe((value) => {
       if (value) {
@@ -67,47 +43,6 @@ export class AppComponent implements OnInit {
       }
     });
 
-    // For Interested Experiment Point
-    this.interestedExperimentPointForm = this._formBuilder.group({
-      interestedPoint: [null, Validators.required]
-    });
-
-    this.filterInterestedExperimentPoints$ = this.interestedExperimentPointForm.get('interestedPoint').valueChanges
-      .pipe(
-        startWith(''),
-        map(state => state ? this._filterMarkExperimentPoints(state, 'partitionPoint') : this.listOfExperimentPoints.slice() )
-      );
-
-    // For Experiment Partition Information
-    this.experimentPartitionForm = this._formBuilder.group({
-      partitions: this._formBuilder.array([this.getNewPartitionInfo()])
-    });
-
-    // For Mark Experiment
-    this.markExperimentForm = this._formBuilder.group({
-      markExperimentPoint: [null, Validators.required],
-      markExperimentName: [null, Validators.required]
-    });
-
-    this.filterMarkExperimentNames$ = this.markExperimentForm.get('markExperimentName').valueChanges
-      .pipe(
-        startWith(''),
-        map(state => state ? this._filterMarkExperimentPoints(state, 'partitionName') : this.listOfExperimentPoints.slice())
-      );
-
-    this.filterMarkExperimentPoints$ = this.markExperimentForm.get('markExperimentPoint').valueChanges
-      .pipe(
-        startWith(''),
-        map(state => state ? this._filterMarkExperimentPoints(state, 'partitionPoint') : this.listOfExperimentPoints.slice() )
-      );
-  }
-
-  async fetchExperimentConditions() {
-    this.assignedConditions = [];
-    this.listOfExperimentPoints.forEach( async (partition) => {
-      const result = await getExperimentCondition(partition.partitionName, partition.partitionPoint);
-      this.assignedConditions.push(...result.data);
-    });
   }
 
   // For Initiating User
@@ -152,79 +87,11 @@ export class AppComponent implements OnInit {
     const data = {
       userId: this.selectedUser.id,
       userEnvironment: group
-    }
-    await init(environment.endpointApi, data);
-    const interestedPoints = await interestedExperimentPoint(['P3']);
-    console.log('interestedPoints', interestedPoints);
-    this.fetchExperimentConditions();
+    };
+    await init(data.userId, environment.endpointApi);
   }
 
   groupTypeValue(index: number) {
     return this.userInitiateForm.get('userGroups').value[index].groupType === GroupTypes.OTHER;
-  }
-
-  // For Interested Experiment Point
-  async addInterestedPoint() {
-    const { interestedPoint } = this.interestedExperimentPointForm.value;
-    if (this.listOfInterestedExperimentPoints.indexOf(interestedPoint) === -1) {
-      this.listOfInterestedExperimentPoints = [ ...this.listOfInterestedExperimentPoints, interestedPoint ];
-    }
-    this.interestedExperimentPointForm.reset();
-    // await interestedExperimentPoint(['P3']);
-  }
-
-  removeInterestedPoint(index: number) {
-    this.listOfInterestedExperimentPoints.splice(index, 1);
-    this.listOfInterestedExperimentPoints = JSON.parse(JSON.stringify(this.listOfInterestedExperimentPoints));
-  }
-
-  // For Experiment Partition Information
-  getNewPartitionInfo() {
-    return this._formBuilder.group({
-      partitionName: [null, Validators.required],
-      partitionPoint: [null, Validators.required]
-    });
-  }
-
-  get partitionInfo(): FormArray {
-    return this.experimentPartitionForm.get('partitions') as FormArray;
-  }
-
-  addNewPartition() {
-    this.partitionInfo.push(this.getNewPartitionInfo());
-  }
-
-  removePartition(index: number) {
-    this.partitionInfo.removeAt(index);
-  }
-
-  savePartitionInfo() {
-    this.listOfExperimentPoints = [...this.listOfExperimentPoints, ...this.experimentPartitionForm.value.partitions];
-    this.partitionInfo.clear();
-    this.addNewPartition();
-    if (this.selectedUser) {
-      this.fetchExperimentConditions();
-    }
-  }
-
-  removePartitionFromSavedList(index: number) {
-    this.listOfExperimentPoints.splice(index, 1);
-    this.listOfExperimentPoints = JSON.parse(JSON.stringify(this.listOfExperimentPoints));
-    this.fetchExperimentConditions();
-  }
-
-
-  // For Mark Experiment
-
-  private _filterMarkExperimentPoints(value: string, type: string): any[] {
-    const filterValue = value.toLowerCase();
-    return this.listOfExperimentPoints.filter(state => state[type].toLowerCase().indexOf(filterValue) === 0);
-  }
-
-  async markExperiment() {
-    const { markExperimentPoint: point, markExperimentName } = this.markExperimentForm.value;
-    this.markExperimentForm.reset();
-    const response = await markExperimentPoint(markExperimentName, point);
-    console.log('Response of mark Experiment ', response);
   }
 }

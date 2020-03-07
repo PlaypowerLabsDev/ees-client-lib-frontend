@@ -24,7 +24,7 @@
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2",
-    "ees-client-lib": "github:CarnegieLearningWeb/educational-experiment-service-client-libs#master"
+    "ees-client-lib": "github:JD2455/educational-experiment-service-client-libs#Update/lib"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.900.2",
