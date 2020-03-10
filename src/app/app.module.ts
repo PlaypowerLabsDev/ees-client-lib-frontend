@@ -14,6 +14,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NgJsonEditorModule } from 'ang-jsoneditor'
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatTooltipModule,
     MatTableModule,
     MatAutocompleteModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    NgJsonEditorModule
   ],
   providers: [],
   bootstrap: [AppComponent]

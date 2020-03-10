@@ -148,5 +148,14 @@
     color: var(--red);
     margin: 5px;
   }
+
+  ::ng-deep .jsoneditor {
+    margin-bottom: 20px !important;
+    width: 500px !important;
+  }
+
+  ::ng-deep .jsoneditor-menu {
+    display: none;
+  }
 }
 

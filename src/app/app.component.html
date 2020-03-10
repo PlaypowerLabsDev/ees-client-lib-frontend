@@ -2,7 +2,7 @@
 
   <!-- For Initiating user -->
   <div class="user-initiate">
-    <p class="heading">Initiate User</p>
+    <p class="heading">Initialize User</p>
     <div>
       <form [formGroup]="userInitiateForm">
 
@@ -13,67 +13,14 @@
             formControlName="id"
           />
         </mat-form-field>
-
-        <!-- <div formArrayName="userGroups">
-          <div *ngFor="let group of userGroups.controls; let index = index">
-            <ng-container [formGroupName]="index">
-              <mat-form-field class="form-control">
-                <mat-label>Group Type</mat-label>
-                <mat-select formControlName="groupType">
-                  <mat-option
-                    *ngFor="let groupType of groupList[index]"
-                    [value]="groupType.value"
-                  >
-                    {{ groupType.value | titlecase }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-
-              <mat-form-field
-                class="form-control"
-                *ngIf="groupTypeValue(index)"
-              >
-                <input
-                  matInput
-                  placeholder="Enter Group Name"
-                  formControlName="customGroupName"
-                />
-              </mat-form-field>
-
-              <mat-form-field class="form-control">
-                <input
-                  matInput
-                  placeholder="Group ID"
-                  formControlName="groupId"
-                />
-              </mat-form-field>
-
-              <mat-icon
-                *ngIf="index !== 0"
-                class="icons"
-                (click)="removeUserGroup(index)"
-              >delete</mat-icon>
-            </ng-container>
-          </div>
-        </div>
-
-        <span class="validation-message" *ngIf="userInitiateForm.hasError('customGroupNameError')">
-          Custom Group Names should not same
-        </span>
-
-        <button
-          type="button"
-          class="add-user-group"
-          (click)="addNewUserGroup()"
-        >
-          + Add New Group
-        </button> -->
+        <json-editor #initialUserGroupEditor [options]="optionsForInitialUserGroups"></json-editor>
+        <json-editor #initialWorkingGroupEditor [options]="optionsForInitialWorkingGroups"></json-editor>
 
         <button
           mat-raised-button
           class="default-button form-control"
-          [ngClass]="{'default-button--disabled': !userInitiateForm.valid}"
-          [disabled]="!userInitiateForm.valid"
+          [ngClass]="{'default-button--disabled': !userInitiateForm.valid || hasInitialUserGroupsError || hasInitialWorkingGroupError}"
+          [disabled]="!userInitiateForm.valid || hasInitialUserGroupsError || hasInitialWorkingGroupError"
           (click)="initiateUser()"
         >
           Initiate User
@@ -88,74 +35,17 @@
   <div class="user-initiate">
     <p class="heading">Set Group Membership</p>
     <div>
-      <form [formGroup]="groupMemberShipForm">
-
-        <div formArrayName="userGroups">
-          <div *ngFor="let group of userGroupsForMemberShip.controls; let index = index">
-            <ng-container [formGroupName]="index">
-              <mat-form-field class="form-control">
-                <mat-label>Group Type</mat-label>
-                <mat-select formControlName="groupType">
-                  <mat-option
-                    *ngFor="let groupType of groupTypes"
-                    [value]="groupType.value"
-                  >
-                    {{ groupType.value | titlecase }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-
-              <mat-form-field
-                class="form-control"
-                *ngIf="groupTypeValueForMemberShip(index)"
-              >
-                <input
-                  matInput
-                  placeholder="Enter Group Name"
-                  formControlName="customGroupName"
-                />
-              </mat-form-field>
-
-              <mat-form-field class="form-control">
-                <input
-                  matInput
-                  placeholder="Group ID"
-                  formControlName="groupId"
-                />
-              </mat-form-field>
-
-              <mat-icon
-                *ngIf="index !== 0"
-                class="icons"
-                (click)="removeUserGroupForMemberShip(index)"
-              >delete</mat-icon>
-            </ng-container>
-          </div>
-        </div>
-
-        <span class="validation-message" *ngIf="groupMemberShipForm.hasError('customGroupNameError')">
-          Custom Group Names should not same
-        </span>
-
-        <button
-          type="button"
-          class="add-user-group"
-          (click)="addNewUserGroupForMemberShip()"
-        >
-          + Add New Membership
-        </button>
+        <json-editor #groupMemberships [options]="optionsForSettingGroupMembership"></json-editor>
 
         <button
           mat-raised-button
           class="default-button form-control"
-          [ngClass]="{'default-button--disabled': !groupMemberShipForm.valid || !selectedUser?.id}"
-          [disabled]="!groupMemberShipForm.valid || !selectedUser?.id"
+          [ngClass]="{'default-button--disabled': !selectedUser?.id || hasSettingGroupMemberShipError}"
+          [disabled]="!selectedUser?.id || hasSettingGroupMemberShipError"
           (click)="setGroupMemberShip()"
         >
           Set Group Membership
         </button>
-
-      </form>
     </div>
   </div>
 
@@ -163,74 +53,17 @@
   <div class="user-initiate">
     <p class="heading">Set Working Group</p>
     <div>
-      <form [formGroup]="workingGroupForm">
+      <json-editor #workingGroups [options]="optionsForSettingWorkingGroup"></json-editor>
 
-        <div formArrayName="workingGroups">
-          <div *ngFor="let group of workingGroup.controls; let index = index">
-            <ng-container [formGroupName]="index">
-              <mat-form-field class="form-control">
-                <mat-label>Group Type</mat-label>
-                <mat-select formControlName="groupType">
-                  <mat-option
-                    *ngFor="let groupType of workingGroupList[index]"
-                    [value]="groupType.value"
-                  >
-                    {{ groupType.value | titlecase }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-
-              <mat-form-field
-                class="form-control"
-                *ngIf="groupTypeValueForWorkingGroup(index)"
-              >
-                <input
-                  matInput
-                  placeholder="Enter Group Name"
-                  formControlName="customGroupName"
-                />
-              </mat-form-field>
-
-              <mat-form-field class="form-control">
-                <input
-                  matInput
-                  placeholder="Group ID"
-                  formControlName="groupId"
-                />
-              </mat-form-field>
-
-              <mat-icon
-                *ngIf="index !== 0"
-                class="icons"
-                (click)="removeWorkingGroup(index)"
-              >delete</mat-icon>
-            </ng-container>
-          </div>
-        </div>
-
-        <span class="validation-message" *ngIf="workingGroupForm.hasError('customGroupNameError')">
-          Custom Group Names should not same
-        </span>
-
-        <button
-          type="button"
-          class="add-user-group"
-          (click)="addNewWorkingGroup()"
-        >
-          + Add New Working Group
-        </button>
-
-        <button
-          mat-raised-button
-          class="default-button form-control"
-          [ngClass]="{'default-button--disabled': !workingGroupForm.valid || !selectedUser?.id}"
-          [disabled]="!workingGroupForm.valid || !selectedUser?.id"
-          (click)="setWorkingGroup()"
-        >
-          Set Working Group
-        </button>
-
-      </form>
+      <button
+        mat-raised-button
+        class="default-button form-control"
+        [ngClass]="{'default-button--disabled': !selectedUser?.id || hasSettingWorkingGroupError}"
+        [disabled]="!selectedUser?.id || hasSettingWorkingGroupError"
+        (click)="setWorkingGroup()"
+      >
+        Set Working Group
+      </button>
     </div>
   </div>
 
@@ -333,18 +166,18 @@
   </div>
 
   <!-- For Refreshing GetAllExperimentConditions -->
-  <!-- <div class="refresh-conditions">
-    <p class="heading">Refresh Condition</p>
+  <div class="refresh-conditions">
+    <p class="heading">Get All Experiment Conditions</p>
     <button
       mat-raised-button
       class="default-button form-control mark-experiment-btn"
       [ngClass]="{'default-button--disabled': !selectedUser?.id}"
       [disabled]="!selectedUser?.id"
-      (click)="refreshConditions()"
+      (click)="getAllExperimentConditions()"
     >
-      Refresh Conditions
+      GetAllExperimentConditions
     </button>
-  </div> -->
+  </div>
 
   <!-- For Assigned Condition -->
   <div class="assigned-condition">
