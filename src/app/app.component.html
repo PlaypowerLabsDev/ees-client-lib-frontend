@@ -82,8 +82,8 @@
               <mat-form-field class="form-control">
                 <input
                   matInput
-                  placeholder="Experiment Name"
-                  formControlName="partitionName"
+                  placeholder="Experiment Point"
+                  formControlName="partitionPoint"
                 />
               </mat-form-field>
 
@@ -91,7 +91,7 @@
                 <input
                   matInput
                   placeholder="Partition Id"
-                  formControlName="partitionPoint"
+                  formControlName="partitionName"
                 />
               </mat-form-field>
 
@@ -141,14 +141,14 @@
 
         <!-- Name Column -->
         <ng-container matColumnDef="partitionName">
-          <th mat-header-cell *matHeaderCellDef> Partition Name </th>
-          <td mat-cell *matCellDef="let element"> {{element.partitionName}} </td>
+          <th mat-header-cell *matHeaderCellDef> Experiment Point </th>
+          <td mat-cell *matCellDef="let element"> {{element.partitionPoint}} </td>
         </ng-container>
 
         <!-- Weight Column -->
         <ng-container matColumnDef="partitionPoint">
-          <th mat-header-cell *matHeaderCellDef> Partition Point </th>
-          <td mat-cell *matCellDef="let element"> {{element.partitionPoint}} </td>
+          <th mat-header-cell *matHeaderCellDef> Partition ID </th>
+          <td mat-cell *matCellDef="let element"> {{element.partitionName}} </td>
         </ng-container>
 
         <!-- Symbol Column -->
@@ -201,13 +201,13 @@
 
         <!-- Point Column -->
         <ng-container matColumnDef="point">
-          <th mat-header-cell *matHeaderCellDef> Partition Point </th>
+          <th mat-header-cell *matHeaderCellDef> Experiment Point </th>
           <td mat-cell *matCellDef="let element"> {{ element.point }} </td>
         </ng-container>
 
         <!-- Name Column -->
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef> Partition Name </th>
+          <th mat-header-cell *matHeaderCellDef> Partition ID </th>
           <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
         </ng-container>
 
@@ -248,23 +248,8 @@
       <mat-form-field class="form-control">
         <input
           matInput
-          placeholder="Partition Name"
-          aria-label="Partition Name"
-          [matAutocomplete]="markExperimentName"
-          formControlName="markExperimentName"
-        >
-        <mat-autocomplete #markExperimentName="matAutocomplete">
-          <mat-option *ngFor="let partition of filterMarkExperimentNames$ | async" [value]="partition.partitionName">
-            <span>{{ partition.partitionName }}</span>
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-
-      <mat-form-field class="form-control">
-        <input
-          matInput
-          placeholder="Partition Point"
-          aria-label="Partition Point"
+          placeholder="Experiment Point"
+          aria-label="Experiment Point"
           [matAutocomplete]="markExperimentPoint"
           formControlName="markExperimentPoint"
         >
@@ -274,6 +259,24 @@
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
+
+      <mat-form-field class="form-control">
+        <input
+          matInput
+          placeholder="Partition Id"
+          aria-label="Partition Id"
+          [matAutocomplete]="markExperimentName"
+          formControlName="markExperimentName"
+        >
+        <mat-autocomplete #markExperimentName="matAutocomplete">
+          <ng-container *ngFor="let partition of filterMarkExperimentNames$ | async">
+            <mat-option *ngIf="partition.partitionName" [value]="partition.partitionName">
+              <span>{{ partition.partitionName }}</span>
+            </mat-option>
+          </ng-container>
+        </mat-autocomplete>
+      </mat-form-field>
+
     </form>
 
     <button

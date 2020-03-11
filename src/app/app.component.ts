@@ -106,7 +106,7 @@ export class AppComponent implements OnInit {
     // For Mark Experiment
     this.markExperimentForm = this._formBuilder.group({
       markExperimentPoint: [null, Validators.required],
-      markExperimentName: [null, Validators.required]
+      markExperimentName: [null]
     });
 
     this.filterMarkExperimentNames$ = this.markExperimentForm.get('markExperimentName').valueChanges
@@ -125,7 +125,7 @@ export class AppComponent implements OnInit {
   async fetchExperimentConditions() {
     this.assignedConditions = [];
     this.listOfExperimentPoints.forEach( async (partition) => {
-      const result = await getExperimentCondition(partition.partitionName, partition.partitionPoint);
+      const result = partition.partitionName ? await getExperimentCondition(partition.partitionPoint, partition.partitionName) : await getExperimentCondition(partition.partitionPoint) ;
       this.assignedConditions.push(...result.data);
     });
   }
@@ -179,8 +179,8 @@ export class AppComponent implements OnInit {
   // For Experiment Partition Information
   getNewPartitionInfo() {
     return this._formBuilder.group({
-      partitionName: [null, Validators.required],
-      partitionPoint: [null]
+      partitionPoint: [null, Validators.required],
+      partitionName: [null]
     });
   }
 
@@ -214,15 +214,14 @@ export class AppComponent implements OnInit {
   // For Mark Experiment
   private _filterMarkExperimentPoints(value: string, type: string): any[] {
     const filterValue = value.toLowerCase();
-    return this.listOfExperimentPoints.filter(state => state[type].toLowerCase().indexOf(filterValue) === 0);
+    return this.listOfExperimentPoints.filter(state => state[type] && state[type].toLowerCase().indexOf(filterValue) === 0);
   }
 
   async markExperiment() {
     const { markExperimentPoint: point, markExperimentName } = this.markExperimentForm.value;
     this.markExperimentForm.reset();
-    const response = await markExperimentPoint(markExperimentName, point);
+    const response = markExperimentName ? await markExperimentPoint(point, markExperimentName) : await markExperimentPoint(point) ;
     response.status ? this.openSnackBar('Experiment point is marked successfully', 'Ok') : this.openSnackBar('Mark experiment point failed', 'Ok');
-    console.log('Response of mark Experiment ', response);
   }
 
   // For refresh getAllExperimentConditions
