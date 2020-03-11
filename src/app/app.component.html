@@ -13,10 +13,13 @@
             formControlName="id"
           />
         </mat-form-field>
+        <span class="sub-heading">Set Group</span>
         <json-editor #initialUserGroupEditor [options]="optionsForInitialUserGroups"></json-editor>
+        <span class="sub-heading">Set Working group</span>
         <json-editor #initialWorkingGroupEditor [options]="optionsForInitialWorkingGroups"></json-editor>
-
+        <p class="validation-message" *ngIf="userInitializationError">{{ userInitializationError }}</p>
         <button
+          type="button"
           mat-raised-button
           class="default-button form-control"
           [ngClass]="{'default-button--disabled': !userInitiateForm.valid || hasInitialUserGroupsError || hasInitialWorkingGroupError}"
@@ -36,7 +39,7 @@
     <p class="heading">Set Group Membership</p>
     <div>
         <json-editor #groupMemberships [options]="optionsForSettingGroupMembership"></json-editor>
-
+        <p class="validation-message" *ngIf="groupMemberShipError">{{ groupMemberShipError }}</p>
         <button
           mat-raised-button
           class="default-button form-control"
@@ -54,7 +57,7 @@
     <p class="heading">Set Working Group</p>
     <div>
       <json-editor #workingGroups [options]="optionsForSettingWorkingGroup"></json-editor>
-
+      <p class="validation-message" *ngIf="workingGroupError">{{ workingGroupError }}</p>
       <button
         mat-raised-button
         class="default-button form-control"
@@ -79,7 +82,7 @@
               <mat-form-field class="form-control">
                 <input
                   matInput
-                  placeholder="Partition Name"
+                  placeholder="Experiment Name"
                   formControlName="partitionName"
                 />
               </mat-form-field>
@@ -87,7 +90,7 @@
               <mat-form-field class="form-control">
                 <input
                   matInput
-                  placeholder="Partition Point"
+                  placeholder="Partition Id"
                   formControlName="partitionPoint"
                 />
               </mat-form-field>

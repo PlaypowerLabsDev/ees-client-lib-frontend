@@ -6,6 +6,7 @@ import { startWith, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
+import isEmpty from 'lodash.isempty';
 
 @Component({
   selector: 'app-root',
@@ -26,14 +27,17 @@ export class AppComponent implements OnInit {
   optionsForInitialWorkingGroups = new JsonEditorOptions();
   hasInitialUserGroupsError = false;
   hasInitialWorkingGroupError = false;
+  userInitializationError: string;
 
   // For Setting GroupMemberShip
   optionsForSettingGroupMembership = new JsonEditorOptions();
   hasSettingGroupMemberShipError = false;
+  groupMemberShipError: string;
 
   // For Setting Working Group
   optionsForSettingWorkingGroup = new JsonEditorOptions();
   hasSettingWorkingGroupError = false;
+  workingGroupError: string;
 
   // For Experiment Partition Information
   experimentPartitionForm: FormGroup;
@@ -84,7 +88,7 @@ export class AppComponent implements OnInit {
     };
     this.optionsForSettingWorkingGroup = {
       ...this.options
-    }
+    };
     this.setChangeEvent('optionsForInitialUserGroups', 'hasInitialUserGroupsError', 'initialUserGroupEditor');
     this.setChangeEvent('optionsForInitialWorkingGroups', 'hasInitialWorkingGroupError', 'initialWorkingGroupEditor');
     this.setChangeEvent('optionsForSettingGroupMembership', 'hasSettingGroupMemberShipError', 'groupMemberships');
@@ -128,29 +132,47 @@ export class AppComponent implements OnInit {
 
   // For Initiating User
   async initiateUser() {
-    // Call set working groups and group member ship
+    this.selectedUser = null;
+    this.userInitializationError = null;
+
+    const userGroups = this.initialUserGroupEditor.get();
+    const workingGroup = this.initialWorkingGroupEditor.get();
+    let context: any = isEmpty(userGroups) ? {} : { group: userGroups };
+    context = isEmpty(workingGroup) ? { ...context } : { ...context, workingGroup };
+
     this.initialUserGroupEditor.set({} as any);
     this.initialWorkingGroupEditor.set({} as any);
-    this.selectedUser = this.userInitiateForm.value;
-    this.userInitiateForm.get('id').reset();
-    const response = await init(this.selectedUser.id, environment.endpointApi);
+
+    const { id } = this.userInitiateForm.value;
+    const response = await init(id, environment.endpointApi, context);
+    if (response.status) {
+      this.selectedUser = this.userInitiateForm.value;
+    }
+    this.userInitiateForm.reset();
+    this.userInitializationError = response.status ? null : response.message;
     (response.status) ? this.openSnackBar('User is initialized successfully', 'Ok') : this.openSnackBar('User initialization failed', 'Ok');
     this.fetchExperimentConditions();
   }
 
   // Set Group Member ship
   async setGroupMemberShip() {
+    this.groupMemberShipError = null;
     const userGroups = this.groupMemberships.get();
     this.groupMemberships.set({} as any);
     const response = await setGroupMembership(userGroups);
+    this.fetchExperimentConditions();
+    this.groupMemberShipError = response.status ? null : response.message;
     response.status ? this.openSnackBar('Group Membership is set successfully', 'Ok') : this.openSnackBar('Group Membership failed', 'Ok');
   }
 
   // For Working Group
   async setWorkingGroup() {
+    this.workingGroupError = null;
     const workingGroup = this.workingGroups.get();
     this.workingGroups.set({} as any);
     const response = await setWorkingGroup(workingGroup);
+    this.workingGroupError = response.status ? null : response.message;
+    this.fetchExperimentConditions();
     response.status ? this.openSnackBar('Working Group is set successfully', 'Ok') : this.openSnackBar('Working Group failed', 'Ok');
   }
 
@@ -158,7 +180,7 @@ export class AppComponent implements OnInit {
   getNewPartitionInfo() {
     return this._formBuilder.group({
       partitionName: [null, Validators.required],
-      partitionPoint: [null, Validators.required]
+      partitionPoint: [null]
     });
   }
 
@@ -199,15 +221,16 @@ export class AppComponent implements OnInit {
     const { markExperimentPoint: point, markExperimentName } = this.markExperimentForm.value;
     this.markExperimentForm.reset();
     const response = await markExperimentPoint(markExperimentName, point);
-    if (response.status) {
-      this.openSnackBar('Experiment point is marked successfully', 'Ok');
-    }
+    response.status ? this.openSnackBar('Experiment point is marked successfully', 'Ok') : this.openSnackBar('Mark experiment point failed', 'Ok');
     console.log('Response of mark Experiment ', response);
   }
 
   // For refresh getAllExperimentConditions
   async getAllExperimentConditions() {
-    await getAllExperimentConditions();
+    const response = await getAllExperimentConditions();
+    if (response.status) {
+      this.openSnackBar('GetAllExperimentConditions is executed successfully', 'Ok');
+    }
     this.fetchExperimentConditions();
   }
 }

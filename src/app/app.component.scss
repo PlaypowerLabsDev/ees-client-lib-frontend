@@ -9,6 +9,11 @@
     font-weight: bold;
   }
 
+  .sub-heading {
+    display: block;
+    margin-bottom: 5px;
+  }
+
   .default-button {
     background-color: var(--blue) !important;
     padding: 0 1rem;
@@ -146,7 +151,7 @@
   .validation-message {
     display: block;
     color: var(--red);
-    margin: 5px;
+    margin: 10px 10px 10px 0;
   }
 
   ::ng-deep .jsoneditor {
