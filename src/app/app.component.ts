@@ -126,7 +126,9 @@ export class AppComponent implements OnInit {
     this.assignedConditions = [];
     this.listOfExperimentPoints.forEach( async (partition) => {
       const result = partition.partitionName ? await getExperimentCondition(partition.partitionPoint, partition.partitionName) : await getExperimentCondition(partition.partitionPoint) ;
-      this.assignedConditions.push(...result.data);
+      if (result.data) {
+        this.assignedConditions.push(...result.data);
+      }
     });
   }
 
@@ -134,6 +136,7 @@ export class AppComponent implements OnInit {
   async initiateUser() {
     this.selectedUser = null;
     this.userInitializationError = null;
+    this.assignedConditions = [];
 
     const userGroups = this.initialUserGroupEditor.get();
     const workingGroup = this.initialWorkingGroupEditor.get();
@@ -151,7 +154,6 @@ export class AppComponent implements OnInit {
     this.userInitiateForm.reset();
     this.userInitializationError = response.status ? null : response.message;
     (response.status) ? this.openSnackBar('User is initialized successfully', 'Ok') : this.openSnackBar('User initialization failed', 'Ok');
-    this.fetchExperimentConditions();
   }
 
   // Set Group Member ship

@@ -22,7 +22,7 @@
     "@angular/platform-browser-dynamic": "~9.0.1",
     "@angular/router": "~9.0.1",
     "ang-jsoneditor": "^1.9.1",
-    "ees-client-lib": "github:CarnegieLearningWeb/educational-experiment-service-client-libs#master",
+    "ees-client-lib": "github:JD2455/educational-experiment-service-client-libs#Update/lib",
     "jsoneditor": "^8.6.1",
     "lodash.isempty": "^4.4.0",
     "rxjs": "~6.5.4",
