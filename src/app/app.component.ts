@@ -1,12 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
-import { environment } from 'src/environments/environment';
-import { init, setGroupMembership, setWorkingGroup, getExperimentCondition, getAllExperimentConditions, markExperimentPoint } from 'ees-client-lib';
 import { startWith, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
-import isEmpty from 'lodash.isempty';
+import { UpgradeClient } from 'upgrade_client_lib';
 
 @Component({
   selector: 'app-root',
@@ -14,30 +12,28 @@ import isEmpty from 'lodash.isempty';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  @ViewChild('initialUserGroupEditor', { static: false }) initialUserGroupEditor: JsonEditorComponent;
-  @ViewChild('initialWorkingGroupEditor', { static: false }) initialWorkingGroupEditor: JsonEditorComponent;
+  upClient: any;
   @ViewChild('groupMemberships', { static: false }) groupMemberships: JsonEditorComponent;
   @ViewChild('workingGroups', { static: false }) workingGroups: JsonEditorComponent;
   options = new JsonEditorOptions();
 
+  // Set host URL
+  setHostURLForm: FormGroup;
+
   // For initiating user
   userInitiateForm: FormGroup;
   selectedUser: any;
-  optionsForInitialUserGroups = new JsonEditorOptions();
-  optionsForInitialWorkingGroups = new JsonEditorOptions();
-  hasInitialUserGroupsError = false;
-  hasInitialWorkingGroupError = false;
-  userInitializationError: string;
 
   // For Setting GroupMemberShip
   optionsForSettingGroupMembership = new JsonEditorOptions();
   hasSettingGroupMemberShipError = false;
-  groupMemberShipError: string;
 
   // For Setting Working Group
   optionsForSettingWorkingGroup = new JsonEditorOptions();
   hasSettingWorkingGroupError = false;
-  workingGroupError: string;
+
+  // For GetAllExperimentConditions
+  getAllExperimentConditionsForm: FormGroup;
 
   // For Experiment Partition Information
   experimentPartitionForm: FormGroup;
@@ -53,10 +49,13 @@ export class AppComponent implements OnInit {
   filterMarkExperimentPoints$: Observable<any[]>;
   filterMarkExperimentNames$: Observable<any[]>;
 
+  // For Report Error from Client
+  failedExperimentPointForm: FormGroup;
+
   constructor(
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action, {
@@ -77,26 +76,26 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.options.mode = 'code';
-    this.optionsForInitialUserGroups = {
-      ...this.options
-    };
-    this.optionsForInitialWorkingGroups = {
-      ...this.options
-    };
     this.optionsForSettingGroupMembership = {
       ...this.options
     };
     this.optionsForSettingWorkingGroup = {
       ...this.options
     };
-    this.setChangeEvent('optionsForInitialUserGroups', 'hasInitialUserGroupsError', 'initialUserGroupEditor');
-    this.setChangeEvent('optionsForInitialWorkingGroups', 'hasInitialWorkingGroupError', 'initialWorkingGroupEditor');
     this.setChangeEvent('optionsForSettingGroupMembership', 'hasSettingGroupMemberShipError', 'groupMemberships');
     this.setChangeEvent('optionsForSettingWorkingGroup', 'hasSettingWorkingGroupError', 'workingGroups');
+
+    this.setHostURLForm = this._formBuilder.group({
+      hostUrl: [null, Validators.required],
+    });
 
     this.userInitiateForm = this._formBuilder.group({
       id: [null, Validators.required],
     });
+
+    this.getAllExperimentConditionsForm = this._formBuilder.group({
+      context: [null]
+    })
 
     // For Experiment Partition Information
     this.experimentPartitionForm = this._formBuilder.group({
@@ -118,64 +117,79 @@ export class AppComponent implements OnInit {
     this.filterMarkExperimentPoints$ = this.markExperimentForm.get('markExperimentPoint').valueChanges
       .pipe(
         startWith(''),
-        map(state => state ? this._filterMarkExperimentPoints(state, 'partitionPoint') : this.listOfExperimentPoints.slice() )
+        map(state => state ? this._filterMarkExperimentPoints(state, 'partitionPoint') : this.listOfExperimentPoints.slice())
       );
+
+    this.failedExperimentPointForm = this._formBuilder.group({
+      experimentPoint: [null, Validators.required],
+      reason: [null, Validators.required],
+      partitionId: [null]
+    });
   }
 
   async fetchExperimentConditions() {
     this.assignedConditions = [];
-    this.listOfExperimentPoints.forEach( async (partition) => {
-      const result = partition.partitionName ? await getExperimentCondition(partition.partitionPoint, partition.partitionName) : await getExperimentCondition(partition.partitionPoint) ;
-      if (result.data) {
-        this.assignedConditions.push(...result.data);
+    this.listOfExperimentPoints.forEach(async (partition) => {
+      const result = partition.partitionName ?
+        await this.upClient.getExperimentCondition(partition.partitionPoint, partition.partitionName)
+        : await this.upClient.getExperimentCondition(partition.partitionPoint);
+      console.log('Result is ', result);
+      if (result) {
+        this.assignedConditions.push(result);
       }
     });
+  }
+
+  setHostUrl() {
+    const { hostUrl } = this.setHostURLForm.value;
+    UpgradeClient.setHostUrl(hostUrl);
+    this.setHostURLForm.reset();
+    this.openSnackBar('Host URL is set successfully', 'Ok');
   }
 
   // For Initiating User
   async initiateUser() {
     this.selectedUser = null;
-    this.userInitializationError = null;
     this.assignedConditions = [];
-
-    const userGroups = this.initialUserGroupEditor.get();
-    const workingGroup = this.initialWorkingGroupEditor.get();
-    let context: any = isEmpty(userGroups) ? {} : { group: userGroups };
-    context = isEmpty(workingGroup) ? { ...context } : { ...context, workingGroup };
-
-    this.initialUserGroupEditor.set({} as any);
-    this.initialWorkingGroupEditor.set({} as any);
-
     const { id } = this.userInitiateForm.value;
-    const response = await init(id, environment.endpointApi, context);
-    if (response.status) {
-      this.selectedUser = this.userInitiateForm.value;
-    }
     this.userInitiateForm.reset();
-    this.userInitializationError = response.status ? null : response.message;
-    (response.status) ? this.openSnackBar('User is initialized successfully', 'Ok') : this.openSnackBar('User initialization failed', 'Ok');
+    this.upClient = new UpgradeClient(id);
+    this.selectedUser = id;
+    this.openSnackBar('User is initialized successfully', 'Ok');
   }
 
   // Set Group Member ship
   async setGroupMemberShip() {
-    this.groupMemberShipError = null;
+    // this.groupMemberShipError = null;
     const userGroups = this.groupMemberships.get();
     this.groupMemberships.set({} as any);
-    const response = await setGroupMembership(userGroups);
+    const groupMap = this.convertObjectToMap(userGroups);
+    const response = await this.upClient.setGroupMembership(groupMap);
+    (response.id)
+      ? this.openSnackBar('Group Membership is set successfully', 'Ok')
+      : this.openSnackBar('Group Membership failed', 'Ok');
     this.fetchExperimentConditions();
-    this.groupMemberShipError = response.status ? null : response.message;
-    response.status ? this.openSnackBar('Group Membership is set successfully', 'Ok') : this.openSnackBar('Group Membership failed', 'Ok');
   }
 
   // For Working Group
   async setWorkingGroup() {
-    this.workingGroupError = null;
+    // this.workingGroupError = null;
     const workingGroup = this.workingGroups.get();
     this.workingGroups.set({} as any);
-    const response = await setWorkingGroup(workingGroup);
-    this.workingGroupError = response.status ? null : response.message;
+    const workingGroupMap = this.convertObjectToMap(workingGroup);
+    const response = await this.upClient.setWorkingGroup(workingGroupMap);
+    (response.id)
+      ? this.openSnackBar('Working Group is set successfully', 'Ok')
+      : this.openSnackBar('Working Group failed', 'Ok');
     this.fetchExperimentConditions();
-    response.status ? this.openSnackBar('Working Group is set successfully', 'Ok') : this.openSnackBar('Working Group failed', 'Ok');
+  }
+
+  convertObjectToMap(obj) {
+    const objMap = new Map();
+    Object.keys(obj).forEach((key) => {
+      objMap.set(key, obj[key]);
+    });
+    return objMap;
   }
 
   // For Experiment Partition Information
@@ -222,14 +236,31 @@ export class AppComponent implements OnInit {
   async markExperiment() {
     const { markExperimentPoint: point, markExperimentName } = this.markExperimentForm.value;
     this.markExperimentForm.reset();
-    const response = markExperimentName ? await markExperimentPoint(point, markExperimentName) : await markExperimentPoint(point) ;
-    response.status ? this.openSnackBar('Experiment point is marked successfully', 'Ok') : this.openSnackBar('Mark experiment point failed', 'Ok');
+    const response = markExperimentName
+      ? await this.upClient.markExperimentPoint(point, markExperimentName)
+      : await this.upClient.markExperimentPoint(point);
+    (response.userId)
+      ? this.openSnackBar('Experiment point is marked successfully', 'Ok')
+      : this.openSnackBar('Mark experiment point failed', 'Ok');
+  }
+
+  // For Report error from client
+  async reportError() {
+    const { experimentPoint, reason, partitionId } = this.failedExperimentPointForm.value;
+    this.failedExperimentPointForm.reset();
+    const response = partitionId
+      ? await this.upClient.failedExperimentPoint(experimentPoint, reason, partitionId)
+      : await this.upClient.failedExperimentPoint(experimentPoint, reason);
+    (response.message)
+      ? this.openSnackBar('Error from client reported successfully', 'Ok')
+      : this.openSnackBar('Report error from client failed', 'Ok');
   }
 
   // For refresh getAllExperimentConditions
   async getAllExperimentConditions() {
-    const response = await getAllExperimentConditions();
-    if (response.status) {
+    const { context } = this.getAllExperimentConditionsForm.value;
+    const response = context ? await this.upClient.getAllExperimentConditions(context) : await this.upClient.getAllExperimentConditions();
+    if (Array.isArray(response)) {
       this.openSnackBar('GetAllExperimentConditions is executed successfully', 'Ok');
     }
     this.fetchExperimentConditions();

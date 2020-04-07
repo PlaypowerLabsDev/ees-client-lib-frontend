@@ -1,5 +1,33 @@
 <div class="container">
 
+  <!-- Set Host URL -->
+  <div class="host-url">
+    <p class="heading">Set Host URL</p>
+    <div>
+      <form [formGroup]="setHostURLForm">
+
+        <mat-form-field class="form-control">
+          <input
+            matInput
+            placeholder="Enter Host URL"
+            formControlName="hostUrl"
+          />
+        </mat-form-field>
+        <button
+          type="button"
+          mat-raised-button
+          class="default-button form-control"
+          [ngClass]="{'default-button--disabled': !setHostURLForm.valid}"
+          [disabled]="!setHostURLForm.valid"
+          (click)="setHostUrl()"
+        >
+          Set URL
+        </button>
+
+      </form>
+    </div>
+  </div>
+
   <!-- For Initiating user -->
   <div class="user-initiate">
     <p class="heading">Initialize User</p>
@@ -13,17 +41,12 @@
             formControlName="id"
           />
         </mat-form-field>
-        <span class="sub-heading">Set Group</span>
-        <json-editor #initialUserGroupEditor [options]="optionsForInitialUserGroups"></json-editor>
-        <span class="sub-heading">Set Working group</span>
-        <json-editor #initialWorkingGroupEditor [options]="optionsForInitialWorkingGroups"></json-editor>
-        <p class="validation-message" *ngIf="userInitializationError">{{ userInitializationError }}</p>
         <button
           type="button"
           mat-raised-button
           class="default-button form-control"
-          [ngClass]="{'default-button--disabled': !userInitiateForm.valid || hasInitialUserGroupsError || hasInitialWorkingGroupError}"
-          [disabled]="!userInitiateForm.valid || hasInitialUserGroupsError || hasInitialWorkingGroupError"
+          [ngClass]="{'default-button--disabled': !userInitiateForm.valid}"
+          [disabled]="!userInitiateForm.valid"
           (click)="initiateUser()"
         >
           Initiate User
@@ -31,7 +54,7 @@
 
       </form>
     </div>
-    <p *ngIf="selectedUser">{{ 'Current User : '+ selectedUser?.id }}</p>
+    <p *ngIf="selectedUser">{{ 'Current User : '+ selectedUser }}</p>
   </div>
 
   <!-- Set Group Member ship -->
@@ -39,12 +62,12 @@
     <p class="heading">Set Group Membership</p>
     <div>
         <json-editor #groupMemberships [options]="optionsForSettingGroupMembership"></json-editor>
-        <p class="validation-message" *ngIf="groupMemberShipError">{{ groupMemberShipError }}</p>
+        <!-- <p class="validation-message" *ngIf="groupMemberShipError">{{ groupMemberShipError }}</p> -->
         <button
           mat-raised-button
           class="default-button form-control"
-          [ngClass]="{'default-button--disabled': !selectedUser?.id || hasSettingGroupMemberShipError}"
-          [disabled]="!selectedUser?.id || hasSettingGroupMemberShipError"
+          [ngClass]="{'default-button--disabled': !selectedUser || hasSettingGroupMemberShipError}"
+          [disabled]="!selectedUser || hasSettingGroupMemberShipError"
           (click)="setGroupMemberShip()"
         >
           Set Group Membership
@@ -57,12 +80,12 @@
     <p class="heading">Set Working Group</p>
     <div>
       <json-editor #workingGroups [options]="optionsForSettingWorkingGroup"></json-editor>
-      <p class="validation-message" *ngIf="workingGroupError">{{ workingGroupError }}</p>
+      <!-- <p class="validation-message" *ngIf="workingGroupError">{{ workingGroupError }}</p> -->
       <button
         mat-raised-button
         class="default-button form-control"
-        [ngClass]="{'default-button--disabled': !selectedUser?.id || hasSettingWorkingGroupError}"
-        [disabled]="!selectedUser?.id || hasSettingWorkingGroupError"
+        [ngClass]="{'default-button--disabled': !selectedUser || hasSettingWorkingGroupError}"
+        [disabled]="!selectedUser || hasSettingWorkingGroupError"
         (click)="setWorkingGroup()"
       >
         Set Working Group
@@ -171,15 +194,25 @@
   <!-- For Refreshing GetAllExperimentConditions -->
   <div class="refresh-conditions">
     <p class="heading">Get All Experiment Conditions</p>
-    <button
-      mat-raised-button
-      class="default-button form-control mark-experiment-btn"
-      [ngClass]="{'default-button--disabled': !selectedUser?.id}"
-      [disabled]="!selectedUser?.id"
-      (click)="getAllExperimentConditions()"
-    >
-      GetAllExperimentConditions
-    </button>
+    <form [formGroup]="getAllExperimentConditionsForm">
+
+      <mat-form-field class="form-control">
+        <input
+          matInput
+          placeholder="Enter context"
+          formControlName="context"
+        />
+      </mat-form-field>
+      <button
+        mat-raised-button
+        class="default-button form-control mark-experiment-btn"
+        [ngClass]="{'default-button--disabled': !selectedUser}"
+        [disabled]="!selectedUser"
+        (click)="getAllExperimentConditions()"
+      >
+        GetAllExperimentConditions
+      </button>
+    </form>
   </div>
 
   <!-- For Assigned Condition -->
@@ -282,11 +315,51 @@
     <button
       mat-raised-button
       class="default-button form-control mark-experiment-btn"
-      [ngClass]="{'default-button--disabled': !markExperimentForm.valid || !selectedUser?.id}"
-      [disabled]="!markExperimentForm.valid || !selectedUser?.id"
+      [ngClass]="{'default-button--disabled': !markExperimentForm.valid || !selectedUser}"
+      [disabled]="!markExperimentForm.valid || !selectedUser"
       (click)="markExperiment()"
     >
       Mark Experiment
+    </button>
+  </div>
+
+  <!-- For Failed Experiment Point -->
+  <p class="heading">Report Error from Client</p>
+  <div>
+    <form [formGroup]="failedExperimentPointForm">
+      <mat-form-field class="form-control">
+        <input
+          matInput
+          placeholder="Experiment Point"
+          formControlName="experimentPoint"
+        >
+      </mat-form-field>
+
+      <mat-form-field class="form-control">
+        <input
+          matInput
+          placeholder="Reason"
+          formControlName="reason"
+        >
+      </mat-form-field>
+
+      <mat-form-field class="form-control">
+        <input
+          matInput
+          placeholder="Partition Id"
+          formControlName="partitionId"
+        >
+      </mat-form-field>
+    </form>
+
+    <button
+      mat-raised-button
+      class="default-button form-control mark-experiment-btn"
+      [ngClass]="{'default-button--disabled': !failedExperimentPointForm.valid || !selectedUser}"
+      [disabled]="!failedExperimentPointForm.valid || !selectedUser"
+      (click)="reportError()"
+    >
+      Report Error
     </button>
   </div>
 
