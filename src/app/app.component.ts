@@ -133,7 +133,6 @@ export class AppComponent implements OnInit {
       const result = partition.partitionName ?
         await this.upClient.getExperimentCondition(partition.partitionPoint, partition.partitionName)
         : await this.upClient.getExperimentCondition(partition.partitionPoint);
-      console.log('Result is ', result);
       if (result) {
         this.assignedConditions.push(result);
       }
