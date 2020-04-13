@@ -206,8 +206,8 @@
       <button
         mat-raised-button
         class="default-button form-control mark-experiment-btn"
-        [ngClass]="{'default-button--disabled': !selectedUser}"
-        [disabled]="!selectedUser"
+        [ngClass]="{'default-button--disabled': !selectedUser || !getAllExperimentConditionsForm.valid}"
+        [disabled]="!selectedUser || !getAllExperimentConditionsForm.valid"
         (click)="getAllExperimentConditions()"
       >
         GetAllExperimentConditions

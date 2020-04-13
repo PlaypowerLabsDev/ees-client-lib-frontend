@@ -94,8 +94,8 @@ export class AppComponent implements OnInit {
     });
 
     this.getAllExperimentConditionsForm = this._formBuilder.group({
-      context: [null]
-    })
+      context: [null, Validators.required]
+    });
 
     // For Experiment Partition Information
     this.experimentPartitionForm = this._formBuilder.group({
@@ -258,7 +258,7 @@ export class AppComponent implements OnInit {
   // For refresh getAllExperimentConditions
   async getAllExperimentConditions() {
     const { context } = this.getAllExperimentConditionsForm.value;
-    const response = context ? await this.upClient.getAllExperimentConditions(context) : await this.upClient.getAllExperimentConditions();
+    const response = await this.upClient.getAllExperimentConditions(context);
     if (Array.isArray(response)) {
       this.openSnackBar('GetAllExperimentConditions is executed successfully', 'Ok');
     }
