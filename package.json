@@ -26,7 +26,7 @@
     "lodash.isempty": "^4.4.0",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
-    "upgrade_client_lib": "github:JD2455/educational-experiment-service-client-libs#Update/types",
+    "upgrade_client_lib": "github:CarnegieLearningWeb/educational-experiment-service-client-libs#master",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
