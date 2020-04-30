@@ -152,7 +152,7 @@ export class AppComponent implements OnInit {
     this.assignedConditions = [];
     const { id } = this.userInitiateForm.value;
     this.userInitiateForm.reset();
-    this.upClient = new UpgradeClient(id);
+    this.upClient = new UpgradeClient(id, 'AUTH_TOKEN');
     this.selectedUser = id;
     this.openSnackBar('User is initialized successfully', 'Ok');
   }
