@@ -141,7 +141,7 @@ export class AppComponent implements OnInit {
 
   setHostUrl() {
     const { hostUrl } = this.setHostURLForm.value;
-    UpgradeClient.setHostUrl(hostUrl);
+    UpgradeClient.setHostUrl(hostUrl.trim());
     this.setHostURLForm.reset();
     this.openSnackBar('Host URL is set successfully', 'Ok');
   }
@@ -150,8 +150,9 @@ export class AppComponent implements OnInit {
   async initiateUser() {
     this.selectedUser = null;
     this.assignedConditions = [];
-    const { id } = this.userInitiateForm.value;
+    let { id } = this.userInitiateForm.value;
     this.userInitiateForm.reset();
+    id = id.trim();
     this.upClient = new UpgradeClient(id, 'AUTH_TOKEN');
     this.selectedUser = id;
     this.openSnackBar('User is initialized successfully', 'Ok');
@@ -212,6 +213,11 @@ export class AppComponent implements OnInit {
   }
 
   savePartitionInfo() {
+    this.experimentPartitionForm.value.partitions = this.experimentPartitionForm.value.partitions.map(partition => {
+      partition.partitionPoint = partition.partitionPoint.trim();
+      partition.partitionName = !!partition.partitionName ? partition.partitionName.trim() : partition.partitionName;
+      return partition;
+    });
     this.listOfExperimentPoints = [...this.listOfExperimentPoints, ...this.experimentPartitionForm.value.partitions];
     this.partitionInfo.clear();
     this.addNewPartition();
@@ -257,7 +263,8 @@ export class AppComponent implements OnInit {
 
   // For refresh getAllExperimentConditions
   async getAllExperimentConditions() {
-    const { context } = this.getAllExperimentConditionsForm.value;
+    let { context } = this.getAllExperimentConditionsForm.value;
+    context = context.trim();
     const response = await this.upClient.getAllExperimentConditions(context);
     if (Array.isArray(response)) {
       this.openSnackBar('GetAllExperimentConditions is executed successfully', 'Ok');
