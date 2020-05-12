@@ -47,6 +47,7 @@
   .experiment-partition,
   .assigned-condition,
   .refresh-conditions,
+  .refresh-feature-flags,
   .interested-experiment-point {
     margin-bottom: 50px;
 
@@ -145,6 +146,42 @@
 
       .mark-experiment-btn {
         margin-top: 15px;
+      }
+    }
+  }
+
+  .mark-experiment-view,
+  .report-error-client {
+    margin-bottom: 50px;
+  }
+
+  .feature-flags {
+    margin-bottom: 50px;
+
+    &-view {
+      .feature-flags-table {
+        width: 100%;
+
+        .mat-cell,
+        .mat-header-cell {
+          width: 16%;
+          padding: 5px;
+        }
+
+        .mat-column-no {
+          text-align: center;
+        }
+      }
+
+      .feature-flags-zero-state {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 50px;
+
+        span {
+          font-size: var(--text-size-xx-large);
+        }
       }
     }
   }

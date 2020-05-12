@@ -52,6 +52,10 @@ export class AppComponent implements OnInit {
   // For Report Error from Client
   failedExperimentPointForm: FormGroup;
 
+  // For Feature Flags
+  displayedColumnFeatureFlags = ['no', 'name', 'key', 'status', 'type', 'activeVariation'];
+  featureFlagList = [];
+
   constructor(
     private _formBuilder: FormBuilder,
     private _snackBar: MatSnackBar
@@ -270,5 +274,21 @@ export class AppComponent implements OnInit {
       this.openSnackBar('GetAllExperimentConditions is executed successfully', 'Ok');
     }
     this.fetchExperimentConditions();
+  }
+
+  // For Feature flags
+  async getAllFeatureFlags() {
+    const featureFlags = await this.upClient.getAllFeatureFlags();
+    this.featureFlagList = featureFlags;
+  }
+
+  getActiveVariation(flag: any) {
+    const { status } = flag;
+    const existedVariation = flag.variations.filter(variation => {
+      if (variation.defaultVariation && variation.defaultVariation.indexOf(status) !== -1) {
+        return variation;
+      }
+    })[0];
+    return  existedVariation ? existedVariation.value : '';
   }
 }
