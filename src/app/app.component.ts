@@ -279,7 +279,12 @@ export class AppComponent implements OnInit {
   // For Feature flags
   async getAllFeatureFlags() {
     const featureFlags = await this.upClient.getAllFeatureFlags();
-    this.featureFlagList = featureFlags;
+    if (Array.isArray(this.featureFlagList)) {
+      this.openSnackBar('GetAllFeatureFlags is executed successfully', 'Ok');
+      this.featureFlagList = featureFlags;
+    } else {
+      this.featureFlagList = [];
+    }
   }
 
   getActiveVariation(flag: any) {
