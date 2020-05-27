@@ -363,6 +363,55 @@
     </button>
   </div>
 
+  <!-- For Logging -->
+  <p class="heading">Logging</p>
+  <div class="logging-view">
+
+    <form [formGroup]="logForm">
+      <mat-form-field class="form-control">
+        <input
+          matInput
+          placeholder="Key"
+          formControlName="key"
+        >
+      </mat-form-field>
+
+      <mat-form-field class="form-control">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option [value]="'string'">String</mat-option>
+          <mat-option [value]="'json'">JSON</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="logForm.get('type')?.value === 'string'; else jsonTemplate" class="form-control">
+        <input
+          matInput
+          placeholder="Value"
+          formControlName="value"
+        >
+      </mat-form-field>
+      <ng-template #jsonTemplate>
+          <json-editor
+            #logJsonEditor
+            [options]="optionsForLog"
+            *ngIf="logForm.get('type')?.value === 'json'"
+          ></json-editor>
+      </ng-template>
+
+    </form>
+
+    <button
+      mat-raised-button
+      class="default-button form-control mark-experiment-btn"
+      [ngClass]="{'default-button--disabled': !logForm.valid || !selectedUser}"
+      [disabled]="!logForm.valid || !selectedUser"
+      (click)="log()"
+    >
+      Log
+    </button>
+  </div>
+
   <!-- For Refreshing Get All Feature Flags -->
   <div class="refresh-feature-flags">
     <p class="heading">Get All Feature Flags</p>

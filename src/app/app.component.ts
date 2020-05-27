@@ -15,6 +15,7 @@ export class AppComponent implements OnInit {
   upClient: any;
   @ViewChild('groupMemberships', { static: false }) groupMemberships: JsonEditorComponent;
   @ViewChild('workingGroups', { static: false }) workingGroups: JsonEditorComponent;
+  @ViewChild('logJsonEditor', { static: false }) logJsonEditor: JsonEditorComponent;
   options = new JsonEditorOptions();
 
   // Set host URL
@@ -52,6 +53,11 @@ export class AppComponent implements OnInit {
   // For Report Error from Client
   failedExperimentPointForm: FormGroup;
 
+  // For Logging
+  logForm: FormGroup;
+  optionsForLog = new JsonEditorOptions();
+  hasOptionsForLogError = false;
+
   // For Feature Flags
   displayedColumnFeatureFlags = ['no', 'name', 'key', 'status', 'type', 'activeVariation'];
   featureFlagList = [];
@@ -86,8 +92,12 @@ export class AppComponent implements OnInit {
     this.optionsForSettingWorkingGroup = {
       ...this.options
     };
+    this.optionsForLog = {
+      ...this.options
+    };
     this.setChangeEvent('optionsForSettingGroupMembership', 'hasSettingGroupMemberShipError', 'groupMemberships');
     this.setChangeEvent('optionsForSettingWorkingGroup', 'hasSettingWorkingGroupError', 'workingGroups');
+    this.setChangeEvent('optionsForLog', 'hasOptionsForLogError', 'logJsonEditor');
 
     this.setHostURLForm = this._formBuilder.group({
       hostUrl: [null, Validators.required],
@@ -128,6 +138,21 @@ export class AppComponent implements OnInit {
       experimentPoint: [null, Validators.required],
       reason: [null, Validators.required],
       partitionId: [null]
+    });
+
+    // For logging
+    this.logForm = this._formBuilder.group({
+      key: [null, Validators.required],
+      type: [null, Validators.required],
+      value: [null]
+    });
+
+    this.logForm.get('type').valueChanges.subscribe(val => {
+      if (val === 'string') {
+        this.logForm.get('value').setValidators([Validators.required]);
+      } else {
+        this.logForm.get('value').setValidators([]);
+      }
     });
   }
 
@@ -251,6 +276,23 @@ export class AppComponent implements OnInit {
     (response.userId)
       ? this.openSnackBar('Experiment point is marked successfully', 'Ok')
       : this.openSnackBar('Mark experiment point failed', 'Ok');
+  }
+
+  // For Logging
+  async log() {
+    const { key, type } = this.logForm.value;
+    let { value } = this.logForm.value;
+    let loggingValueObject;
+    if (type === 'json') {
+      loggingValueObject = this.logJsonEditor.get();
+      this.logJsonEditor.set({} as any);
+    }
+    this.logForm.reset();
+    value = type === 'string' ? value : loggingValueObject;
+    const response = await this.upClient.log(key, value);
+    !!response
+    ? this.openSnackBar('Logged successfully', 'Ok')
+    : this.openSnackBar('Logged failed', 'Ok');
   }
 
   // For Report error from client
