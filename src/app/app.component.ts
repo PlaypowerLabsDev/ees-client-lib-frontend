@@ -345,8 +345,11 @@ export class AppComponent implements OnInit {
   // For adding metrics
   async addMetrics() {
     const metrics = this.metricsJsonEditor.get();
+    const response = await this.upClient.addMetrics(metrics);
     this.metricsJsonEditor.set({} as any);
-    console.log('Metrics,', metrics);
+    !!response
+    ? this.openSnackBar('Metrics added successfully', 'Ok')
+    : this.openSnackBar('Adding Metrics failed', 'Ok');
   }
 
   // For Report error from client
