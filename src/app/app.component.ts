@@ -16,6 +16,7 @@ export class AppComponent implements OnInit {
   @ViewChild('groupMemberships', { static: false }) groupMemberships: JsonEditorComponent;
   @ViewChild('workingGroups', { static: false }) workingGroups: JsonEditorComponent;
   @ViewChild('logJsonEditor', { static: false }) logJsonEditor: JsonEditorComponent;
+  @ViewChild('metricsJsonEditor', { static: false }) metricsJsonEditor: JsonEditorComponent;
   options = new JsonEditorOptions();
 
   // Set host URL
@@ -24,6 +25,9 @@ export class AppComponent implements OnInit {
   // For initiating user
   userInitiateForm: FormGroup;
   selectedUser: any;
+
+  // For setting alternative user Ids
+  altUserIdsForm: FormGroup;
 
   // For Setting GroupMemberShip
   optionsForSettingGroupMembership = new JsonEditorOptions();
@@ -57,6 +61,10 @@ export class AppComponent implements OnInit {
   logForm: FormGroup;
   optionsForLog = new JsonEditorOptions();
   hasOptionsForLogError = false;
+
+  // For adding metrics
+  optionsForMetrics = new JsonEditorOptions();
+  hasOptionsForMetricsError = false;
 
   // For Feature Flags
   displayedColumnFeatureFlags = ['no', 'name', 'key', 'status', 'type', 'activeVariation'];
@@ -95,9 +103,13 @@ export class AppComponent implements OnInit {
     this.optionsForLog = {
       ...this.options
     };
+    this.optionsForMetrics = {
+      ...this.options
+    }
     this.setChangeEvent('optionsForSettingGroupMembership', 'hasSettingGroupMemberShipError', 'groupMemberships');
     this.setChangeEvent('optionsForSettingWorkingGroup', 'hasSettingWorkingGroupError', 'workingGroups');
     this.setChangeEvent('optionsForLog', 'hasOptionsForLogError', 'logJsonEditor');
+    this.setChangeEvent('optionsForMetrics', 'hasOptionsForMetricsError', 'metricsJsonEditor');
 
     this.setHostURLForm = this._formBuilder.group({
       hostUrl: [null, Validators.required],
@@ -105,6 +117,10 @@ export class AppComponent implements OnInit {
 
     this.userInitiateForm = this._formBuilder.group({
       id: [null, Validators.required],
+    });
+
+    this.altUserIdsForm = this._formBuilder.group({
+      ids: this._formBuilder.array([this.getAltUserIdControl()])
     });
 
     this.getAllExperimentConditionsForm = this._formBuilder.group({
@@ -185,6 +201,37 @@ export class AppComponent implements OnInit {
     this.upClient = new UpgradeClient(id, 'AUTH_TOKEN');
     this.selectedUser = id;
     this.openSnackBar('User is initialized successfully', 'Ok');
+  }
+
+  // For Setting alternative User ids
+  getAltUserIdControl() {
+    return this._formBuilder.group({
+      altId: [null, Validators.required]
+    });
+  }
+
+  get altIdsInfo(): FormArray {
+    return this.altUserIdsForm.get('ids') as FormArray;
+  }
+
+  addNewAltUserId() {
+    this.altIdsInfo.push(this.getAltUserIdControl());
+  }
+
+  removeAltUserId(index: number) {
+    this.altIdsInfo.removeAt(index);
+  }
+
+  async setAltUserIds() {
+    const { ids } = this.altUserIdsForm.value;
+    this.altIdsInfo.clear();
+    this.addNewAltUserId();
+    const altUserIds = ids.map(id => id.altId);
+    // TODO: Call api end point
+    const response = await this.upClient.setAltUserIds(altUserIds);
+    (response)
+      ? this.openSnackBar('Setting alternate user ids successfully', 'Ok')
+      : this.openSnackBar('Setting alternate user ids failed', 'Ok');
   }
 
   // Set Group Member ship
@@ -293,6 +340,13 @@ export class AppComponent implements OnInit {
     !!response
     ? this.openSnackBar('Logged successfully', 'Ok')
     : this.openSnackBar('Logged failed', 'Ok');
+  }
+
+  // For adding metrics
+  async addMetrics() {
+    const metrics = this.metricsJsonEditor.get();
+    this.metricsJsonEditor.set({} as any);
+    console.log('Metrics,', metrics);
   }
 
   // For Report error from client

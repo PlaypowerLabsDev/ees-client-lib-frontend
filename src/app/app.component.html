@@ -57,6 +57,51 @@
     <p *ngIf="selectedUser">{{ 'Current User : '+ selectedUser }}</p>
   </div>
 
+  <!-- For Setting alternative User Ids -->
+  <div class="user-initiate">
+    <p class="heading">Set Alternative User Ids</p>
+    <form class="experiment-partition-form" [formGroup]="altUserIdsForm">
+
+      <div formArrayName="ids">
+        <div *ngFor="let altId of altIdsInfo.controls; let index = index">
+          <ng-container [formGroupName]="index">
+            <mat-form-field class="form-control">
+              <input
+                matInput
+                placeholder="Alternative User Id"
+                formControlName="altId"
+              />
+            </mat-form-field>
+
+            <mat-icon
+              class="icons"
+              (click)="removeAltUserId(index)"
+            >delete</mat-icon>
+          </ng-container>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="add-partition"
+        (click)="addNewAltUserId()"
+      >
+        + Add Alternative User Id
+      </button>
+
+      <button
+        mat-raised-button
+        class="default-button form-control"
+        [ngClass]="{'default-button--disabled': !altUserIdsForm.valid || !selectedUser || !altIdsInfo.controls.length}"
+        [disabled]="!altUserIdsForm.valid || !selectedUser || !altIdsInfo.controls.length"
+        (click)="setAltUserIds()"
+      >
+        Add Alternative Ids
+      </button>
+
+    </form>
+  </div>
+
   <!-- Set Group Member ship -->
   <div class="user-initiate">
     <p class="heading">Set Group Membership</p>
@@ -287,7 +332,7 @@
           formControlName="markExperimentPoint"
         >
         <mat-autocomplete #markExperimentPoint="matAutocomplete">
-          <mat-option *ngFor="let partition of filterMarkExperimentPoints$ | async" [value]="partition.partitionPoint">
+          <mat-option *ngFor="let partition of (filterMarkExperimentPoints$ | async)" [value]="partition.partitionPoint">
             <span>{{ partition.partitionPoint }}</span>
           </mat-option>
         </mat-autocomplete>
@@ -302,7 +347,7 @@
           formControlName="markExperimentName"
         >
         <mat-autocomplete #markExperimentName="matAutocomplete">
-          <ng-container *ngFor="let partition of filterMarkExperimentNames$ | async">
+          <ng-container *ngFor="let partition of (filterMarkExperimentNames$ | async)">
             <mat-option *ngIf="partition.partitionName" [value]="partition.partitionName">
               <span>{{ partition.partitionName }}</span>
             </mat-option>
@@ -409,6 +454,26 @@
       (click)="log()"
     >
       Log
+    </button>
+  </div>
+
+  <!-- For Add Metrics -->
+  <p class="heading">Add Metrics</p>
+  <div class="logging-view">
+
+    <json-editor
+      #metricsJsonEditor
+      [options]="optionsForMetrics"
+    ></json-editor>
+
+    <button
+      mat-raised-button
+      class="default-button form-control mark-experiment-btn"
+      [ngClass]="{'default-button--disabled': !selectedUser || hasOptionsForMetricsError}"
+      [disabled]="!selectedUser || hasOptionsForMetricsError"
+      (click)="addMetrics()"
+    >
+      Add Metrics
     </button>
   </div>
 
