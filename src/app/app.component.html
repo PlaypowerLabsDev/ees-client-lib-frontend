@@ -425,25 +425,38 @@
         <mat-label>Type</mat-label>
         <mat-select formControlName="type">
           <mat-option [value]="'string'">String</mat-option>
+          <mat-option [value]="'number'">Number</mat-option>
           <mat-option [value]="'json'">JSON</mat-option>
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field *ngIf="logForm.get('type')?.value === 'string'; else jsonTemplate" class="form-control">
-        <input
-          matInput
-          placeholder="Value"
-          formControlName="value"
-        >
-      </mat-form-field>
-      <ng-template #jsonTemplate>
+      <ng-container [ngSwitch]="logForm.get('type').value">
+        <ng-container *ngSwitchCase="'string'">
+          <mat-form-field class="form-control">
+            <input
+              matInput
+              placeholder="Value"
+              formControlName="value"
+            >
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngSwitchCase="'number'">
+          <mat-form-field class="form-control">
+            <input
+              type="number"
+              matInput
+              placeholder="Value"
+              formControlName="value"
+            >
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngSwitchCase="'json'">
           <json-editor
             #logJsonEditor
             [options]="optionsForLog"
-            *ngIf="logForm.get('type')?.value === 'json'"
           ></json-editor>
-      </ng-template>
-
+        </ng-container>
+      </ng-container>
     </form>
 
     <button

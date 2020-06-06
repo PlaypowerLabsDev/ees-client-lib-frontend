@@ -335,7 +335,7 @@ export class AppComponent implements OnInit {
       this.logJsonEditor.set({} as any);
     }
     this.logForm.reset();
-    value = type === 'string' ? value : loggingValueObject;
+    value = type === 'json' ? loggingValueObject : value;
     const response = await this.upClient.log(key, value);
     !!response
     ? this.openSnackBar('Logged successfully', 'Ok')
