@@ -201,5 +201,17 @@
   ::ng-deep .jsoneditor-menu {
     display: none;
   }
+
 }
 
+::ng-deep .tooltip-pre-line {
+  white-space: pre-line;
+  font-size: 14px;
+  min-width: 350px;
+}
+
+mat-icon {
+  &:hover {
+    cursor: pointer;
+  }
+}

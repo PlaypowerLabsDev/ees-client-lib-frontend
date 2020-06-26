@@ -2,7 +2,14 @@
 
   <!-- Set Host URL -->
   <div class="host-url">
-    <p class="heading">Set Host URL</p>
+    <span
+      class="heading"
+    >Set Host URL</span>
+    <mat-icon
+      [matTooltip]="getToolTipText(TooltipTextEnum.HOST_URL)"
+      matTooltipClass="tooltip-pre-line"
+      matTooltipPosition="above"
+    >info</mat-icon>
     <div>
       <form [formGroup]="setHostURLForm">
 
@@ -30,7 +37,14 @@
 
   <!-- For Initiating user -->
   <div class="user-initiate">
-    <p class="heading">Initialize User</p>
+    <span
+      class="heading"
+    >Initialize User</span>
+    <mat-icon
+      [matTooltip]="getToolTipText(TooltipTextEnum.INITIATE_USER)"
+      matTooltipClass="tooltip-pre-line"
+      matTooltipPosition="above"
+    >info</mat-icon>
     <div>
       <form [formGroup]="userInitiateForm">
 
@@ -59,7 +73,14 @@
 
   <!-- For Setting alternative User Ids -->
   <div class="user-initiate">
-    <p class="heading">Set Alternative User Ids</p>
+    <span
+      class="heading"
+    >Set Alternative User Ids</span>
+    <mat-icon
+      [matTooltip]="getToolTipText(TooltipTextEnum.ALT_USER_IDS)"
+      matTooltipClass="tooltip-pre-line"
+      matTooltipPosition="above"
+    >info</mat-icon>
     <form class="experiment-partition-form" [formGroup]="altUserIdsForm">
 
       <div formArrayName="ids">
@@ -104,8 +125,17 @@
 
   <!-- Set Group Member ship -->
   <div class="user-initiate">
-    <p class="heading">Set Group Membership</p>
-    <div>
+    <span
+      class="heading"
+    >
+      Set Group Membership
+    </span>
+    <mat-icon
+      [matTooltip]="getToolTipText(TooltipTextEnum.GRP_MEMBERSHIP)"
+      matTooltipClass="tooltip-pre-line"
+      matTooltipPosition="above"
+    >info</mat-icon>
+    <div style="margin-top: 33px;">
         <json-editor #groupMemberships [options]="optionsForSettingGroupMembership"></json-editor>
         <!-- <p class="validation-message" *ngIf="groupMemberShipError">{{ groupMemberShipError }}</p> -->
         <button
@@ -122,8 +152,15 @@
 
   <!-- Set Working Group -->
   <div class="user-initiate">
-    <p class="heading">Set Working Group</p>
-    <div>
+    <span
+      class="heading"
+    >Set Working Group</span>
+    <mat-icon
+      [matTooltip]="getToolTipText(TooltipTextEnum.WORKING_GRP)"
+      matTooltipClass="tooltip-pre-line"
+      matTooltipPosition="above"
+    >info</mat-icon>
+    <div style="margin-top: 33px;">
       <json-editor #workingGroups [options]="optionsForSettingWorkingGroup"></json-editor>
       <!-- <p class="validation-message" *ngIf="workingGroupError">{{ workingGroupError }}</p> -->
       <button
@@ -238,7 +275,14 @@
 
   <!-- For Refreshing GetAllExperimentConditions -->
   <div class="refresh-conditions">
-    <p class="heading">Get All Experiment Conditions</p>
+    <span
+      class="heading"
+    >Get All Experiment Conditions</span>
+    <mat-icon
+      [matTooltip]="getToolTipText(TooltipTextEnum.GET_ALL_CONDITIONS)"
+      matTooltipClass="tooltip-pre-line"
+      matTooltipPosition="above"
+    >info</mat-icon>
     <form [formGroup]="getAllExperimentConditionsForm">
 
       <mat-form-field class="form-control">
@@ -319,7 +363,14 @@
   </div>
 
   <!-- For Mark Experiment -->
-  <p class="heading">Mark Experiment</p>
+  <span
+    class="heading"
+  >Mark Experiment</span>
+  <mat-icon
+    [matTooltip]="getToolTipText(TooltipTextEnum.MARK_EXPERIMENT)"
+    matTooltipClass="tooltip-pre-line"
+    matTooltipPosition="above"
+  >info</mat-icon>
   <div class="mark-experiment-view">
 
     <form [formGroup]="markExperimentForm">
@@ -369,7 +420,14 @@
   </div>
 
   <!-- For Failed Experiment Point -->
-  <p class="heading">Report Error from Client</p>
+  <span
+    class="heading"
+  >Report Error from Client</span>
+  <mat-icon
+    [matTooltip]="getToolTipText(TooltipTextEnum.REPORT_ERROR)"
+    matTooltipClass="tooltip-pre-line"
+    matTooltipPosition="above"
+  >info</mat-icon>
   <div class="report-error-client">
     <form [formGroup]="failedExperimentPointForm">
       <mat-form-field class="form-control">
@@ -409,7 +467,14 @@
   </div>
 
   <!-- For Logging -->
-  <p class="heading">Logging</p>
+  <span
+    class="heading"
+  >Logging</span>
+  <mat-icon
+    [matTooltip]="getToolTipText(TooltipTextEnum.LOGGING)"
+    matTooltipClass="tooltip-pre-line"
+    matTooltipPosition="above"
+  >info</mat-icon>
   <div class="logging-view">
 
     <form [formGroup]="logForm">
@@ -471,8 +536,15 @@
   </div>
 
   <!-- For Add Metrics -->
-  <p class="heading">Add Metrics</p>
-  <div class="logging-view">
+  <span
+    class="heading"
+  >Add Metrics</span>
+  <mat-icon
+    [matTooltip]="getToolTipText(TooltipTextEnum.METRICS)"
+    matTooltipClass="tooltip-pre-line"
+    matTooltipPosition="above"
+  >info</mat-icon>
+  <div style="margin-top: 33px" class="logging-view">
 
     <json-editor
       #metricsJsonEditor
@@ -492,7 +564,16 @@
 
   <!-- For Refreshing Get All Feature Flags -->
   <div class="refresh-feature-flags">
-    <p class="heading">Get All Feature Flags</p>
+    <div style="margin-bottom: 10px;">
+      <span
+        class="heading"
+      >Get All Feature Flags</span>
+      <mat-icon
+        [matTooltip]="getToolTipText(TooltipTextEnum.FEATURE_FLAG)"
+        matTooltipClass="tooltip-pre-line"
+        matTooltipPosition="above"
+      >info</mat-icon>
+    </div>
     <button
       mat-raised-button
       class="default-button form-control mark-experiment-btn"
