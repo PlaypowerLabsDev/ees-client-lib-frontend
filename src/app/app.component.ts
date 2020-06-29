@@ -420,47 +420,47 @@ export class AppComponent implements OnInit {
       case TooltipEnum.HOST_URL:
         return `Type : Local call \n
         Function : UpgradeClient.setHostUrl(url)
-        \n Description: This function will set host url of application locally`;
+        \n Description: This function is used to set host url of application locally`;
       case TooltipEnum.INITIATE_USER:
         return `Type : Local call \n
         Function : const upClient = new UpgradeClient(userId, token)
-        \n Description: This function will initiate user locally`;
+        \n Description: This function is used to initiate user locally`;
       case TooltipEnum.ALT_USER_IDS:
         return `Type : Network call \n
         Function : upClient.setAltUserIds(altUserIds)
-        \n Description: This function will set user aliases for initialized user`;
+        \n Description: This function is used to set user aliases for initialized user`;
       case TooltipEnum.GRP_MEMBERSHIP:
         return `Type : Network call \n
         Function : upClient.setGroupMembership(groupMembership)
-        \n Description: This function will set group membership for initialized user`;
+        \n Description: This function is used to set group membership for initialized user`;
       case TooltipEnum.WORKING_GRP:
         return `Type : Network call \n
         Function : upClient.setWorkingGroup(workingGroup)
-        \n Description: This function will set working group for initialized user`;
+        \n Description: This function is used to set working group for initialized user`;
       case TooltipEnum.GET_ALL_CONDITIONS:
         return `Type : Network call \n
         Function : upClient.getAllExperimentConditions(context)
-        \n Description: This function will return assigned conditions based on context for initialized user`;
+        \n Description: This function is used to get assigned conditions based on context for initialized user`;
       case TooltipEnum.MARK_EXPERIMENT:
         return `Type : Network call \n
         Function : upClient.markExperimentPoint('experimentPoint', 'experimentId')
-        \n Description: This function will mark experimentPoint and experimentId for initialized user`;
+        \n Description: This function is used to mark experimentPoint and experimentId for initialized user`;
       case TooltipEnum.REPORT_ERROR:
         return `Type : Network call \n
         Function : upClient.failedExperimentPoint('experimentPoint', 'Not implemented yet', 'experimentId')
-        \n Description: This function will report custom error from client`;
+        \n Description: This function is used to report custom error from client`;
       case TooltipEnum.LOGGING:
         return `Type : Network call \n
         Function : upClient.log(key, value)
-        \n Description: This function will log data in Upgrade for initialized user`;
+        \n Description: This function is used to log data in Upgrade for initialized user`;
       case TooltipEnum.METRICS:
         return `Type : Network call \n
         Function : upClient.addMetrics(metrics)
-        \n Description: This function will add metrics in Upgrade system`;
+        \n Description: This function is used to add metrics in Upgrade system`;
       case TooltipEnum.FEATURE_FLAG:
         return `Type : Network call \n
         Function : upClient.getAllFeatureFlags()
-        \n Description: This function will return all feature flags created in Upgrade system`;
+        \n Description: This function is used to get all feature flags created in Upgrade system`;
     }
   }
 
