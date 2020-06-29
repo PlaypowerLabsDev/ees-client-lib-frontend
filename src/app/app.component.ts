@@ -72,7 +72,6 @@ export class AppComponent implements OnInit {
   failedExperimentPointForm: FormGroup;
 
   // For Logging
-  logForm: FormGroup;
   optionsForLog = new JsonEditorOptions();
   hasOptionsForLogError = false;
 
@@ -168,21 +167,6 @@ export class AppComponent implements OnInit {
       experimentPoint: [null, Validators.required],
       reason: [null, Validators.required],
       partitionId: [null]
-    });
-
-    // For logging
-    this.logForm = this._formBuilder.group({
-      key: [null, Validators.required],
-      type: [null, Validators.required],
-      value: [null]
-    });
-
-    this.logForm.get('type').valueChanges.subscribe(val => {
-      if (val === 'string') {
-        this.logForm.get('value').setValidators([Validators.required]);
-      } else {
-        this.logForm.get('value').setValidators([]);
-      }
     });
   }
 
@@ -341,16 +325,9 @@ export class AppComponent implements OnInit {
 
   // For Logging
   async log() {
-    const { key, type } = this.logForm.value;
-    let { value } = this.logForm.value;
-    let loggingValueObject;
-    if (type === 'json') {
-      loggingValueObject = this.logJsonEditor.get();
-      this.logJsonEditor.set({} as any);
-    }
-    this.logForm.reset();
-    value = type === 'json' ? loggingValueObject : value;
-    const response = await this.upClient.log(key, value);
+    const logData = this.logJsonEditor.get();
+    this.logJsonEditor.set({} as any);
+    const response = await this.upClient.log(logData);
     !!response
     ? this.openSnackBar('Logged successfully', 'Ok')
     : this.openSnackBar('Logged failed', 'Ok');
@@ -451,7 +428,7 @@ export class AppComponent implements OnInit {
         \n Description: This function is used to report custom error from client`;
       case TooltipEnum.LOGGING:
         return `Type : Network call \n
-        Function : upClient.log(key, value)
+        Function : upClient.log(logData)
         \n Description: This function is used to log data in Upgrade for initialized user`;
       case TooltipEnum.METRICS:
         return `Type : Network call \n

@@ -475,60 +475,16 @@
     matTooltipClass="tooltip-pre-line"
     matTooltipPosition="above"
   >info</mat-icon>
-  <div class="logging-view">
-
-    <form [formGroup]="logForm">
-      <mat-form-field class="form-control">
-        <input
-          matInput
-          placeholder="Key"
-          formControlName="key"
-        >
-      </mat-form-field>
-
-      <mat-form-field class="form-control">
-        <mat-label>Type</mat-label>
-        <mat-select formControlName="type">
-          <mat-option [value]="'string'">String</mat-option>
-          <mat-option [value]="'number'">Number</mat-option>
-          <mat-option [value]="'json'">JSON</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <ng-container [ngSwitch]="logForm.get('type').value">
-        <ng-container *ngSwitchCase="'string'">
-          <mat-form-field class="form-control">
-            <input
-              matInput
-              placeholder="Value"
-              formControlName="value"
-            >
-          </mat-form-field>
-        </ng-container>
-        <ng-container *ngSwitchCase="'number'">
-          <mat-form-field class="form-control">
-            <input
-              type="number"
-              matInput
-              placeholder="Value"
-              formControlName="value"
-            >
-          </mat-form-field>
-        </ng-container>
-        <ng-container *ngSwitchCase="'json'">
-          <json-editor
-            #logJsonEditor
-            [options]="optionsForLog"
-          ></json-editor>
-        </ng-container>
-      </ng-container>
-    </form>
-
+  <div style="margin-top: 33px"  class="logging-view">
+    <json-editor
+      #logJsonEditor
+      [options]="optionsForLog"
+    ></json-editor>
     <button
       mat-raised-button
       class="default-button form-control mark-experiment-btn"
-      [ngClass]="{'default-button--disabled': !logForm.valid || !selectedUser}"
-      [disabled]="!logForm.valid || !selectedUser"
+      [ngClass]="{'default-button--disabled': !selectedUser}"
+      [disabled]="!selectedUser"
       (click)="log()"
     >
       Log
