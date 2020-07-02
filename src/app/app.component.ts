@@ -399,7 +399,7 @@ export class AppComponent implements OnInit {
         \n Description: This function is used to set host url of application locally`;
       case TooltipEnum.INITIATE_USER:
         return `Type : Local call \n
-        Function : const upClient = new UpgradeClient(userId, token)
+        Function : const upClient = new UpgradeClient(userId, token?)
         \n Description: This function is used to initiate user locally`;
       case TooltipEnum.ALT_USER_IDS:
         return `Type : Network call \n
