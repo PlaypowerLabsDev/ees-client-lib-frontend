@@ -196,7 +196,7 @@ export class AppComponent implements OnInit {
     let { id } = this.userInitiateForm.value;
     this.userInitiateForm.reset();
     id = id.trim();
-    this.upClient = new UpgradeClient(id, 'AUTH_TOKEN');
+    this.upClient = new UpgradeClient(id);
     this.selectedUser = id;
     this.openSnackBar('User is initialized successfully', 'Ok');
   }
@@ -225,7 +225,6 @@ export class AppComponent implements OnInit {
     this.altIdsInfo.clear();
     this.addNewAltUserId();
     const altUserIds = ids.map(id => id.altId);
-    // TODO: Call api end point
     const response = await this.upClient.setAltUserIds(altUserIds);
     (response)
       ? this.openSnackBar('Setting alternate user ids successfully', 'Ok')
