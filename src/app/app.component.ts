@@ -61,7 +61,7 @@ export class AppComponent implements OnInit {
   assignedConditions = [];
 
   // For Assigned Conditions
-  displayedColumnMarkExperiment = ['no', 'point', 'name', 'conditionCode', 'assignmentWeight', 'description'];
+  displayedColumnMarkExperiment = ['no', 'point', 'name', 'conditionCode', 'description'];
 
   // For Mark Experiment
   markExperimentForm: FormGroup;
