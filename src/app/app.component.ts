@@ -148,7 +148,8 @@ export class AppComponent implements OnInit {
     // For Mark Experiment
     this.markExperimentForm = this._formBuilder.group({
       markExperimentPoint: [null, Validators.required],
-      markExperimentName: [null]
+      markExperimentName: [null],
+      condition: [null]
     });
 
     this.filterMarkExperimentNames$ = this.markExperimentForm.get('markExperimentName').valueChanges
@@ -312,11 +313,12 @@ export class AppComponent implements OnInit {
   }
 
   async markExperiment() {
-    const { markExperimentPoint: point, markExperimentName } = this.markExperimentForm.value;
+    console.log("tanmay", this.markExperimentForm.value);
+    const { markExperimentPoint: point, markExperimentName, condition } = this.markExperimentForm.value;
     this.markExperimentForm.reset();
     const response = markExperimentName
-      ? await this.upClient.markExperimentPoint(point, markExperimentName)
-      : await this.upClient.markExperimentPoint(point);
+      ? await this.upClient.markExperimentPoint(point, condition, markExperimentName)
+      : await this.upClient.markExperimentPoint(point, condition);
     (response.userId)
       ? this.openSnackBar('Experiment point is marked successfully', 'Ok')
       : this.openSnackBar('Mark experiment point failed', 'Ok');
@@ -328,8 +330,8 @@ export class AppComponent implements OnInit {
     this.logJsonEditor.set({} as any);
     const response = await this.upClient.log(logData);
     !!response
-    ? this.openSnackBar('Logged successfully', 'Ok')
-    : this.openSnackBar('Logged failed', 'Ok');
+      ? this.openSnackBar('Logged successfully', 'Ok')
+      : this.openSnackBar('Logged failed', 'Ok');
   }
 
   // For adding metrics
@@ -339,8 +341,8 @@ export class AppComponent implements OnInit {
       const response = await this.upClient.addMetrics(metrics);
       this.metricsJsonEditor.set({} as any);
       Array.isArray(response)
-      ? this.openSnackBar('Metrics added successfully', 'Ok')
-      : this.openSnackBar('Adding Metrics failed', 'Ok');
+        ? this.openSnackBar('Metrics added successfully', 'Ok')
+        : this.openSnackBar('Adding Metrics failed', 'Ok');
     } catch (err) {
       this.openSnackBar('Adding Metrics failed', 'Ok');
       console.log(err);
@@ -388,7 +390,7 @@ export class AppComponent implements OnInit {
         return variation;
       }
     })[0];
-    return  existedVariation ? existedVariation.value : '';
+    return existedVariation ? existedVariation.value : '';
   }
 
   getToolTipText(type: TooltipEnum): string {
