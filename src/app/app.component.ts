@@ -313,7 +313,6 @@ export class AppComponent implements OnInit {
   }
 
   async markExperiment() {
-    console.log("tanmay", this.markExperimentForm.value);
     const { markExperimentPoint: point, markExperimentName, condition } = this.markExperimentForm.value;
     this.markExperimentForm.reset();
     const response = markExperimentName
